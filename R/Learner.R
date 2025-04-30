@@ -193,6 +193,10 @@ Learner = R6Class("Learner",
     #' Also see the section on error handling the mlr3book:
     #' \url{https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-error-handling}
     timeout = c(train = Inf, predict = Inf),
+    
+    # deadline
+    # Inf or POSIXct(2)
+    deadline = c(train = Inf, predict = Inf),
 
     #' @template field_man
     man = NULL,

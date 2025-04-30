@@ -91,15 +91,32 @@ learner_train = function(learner, task, train_row_ids = NULL, test_row_ids = NUL
 
   lg$debug("Calling %s method of Learner '%s' on task '%s' with %i observations",
     mode, learner$id, task$id, task$nrow, learner = learner$clone())
-
+  
+  # my code start
+  
+  # deadline_left <- Inf
+  # if(!is.infinite(learner$deadline[["train"]])) {
+  #   deadline_left <- learner$deadline$train - as.numeric(Sys.time())
+  # }
+  # if (is.infinite(learner$deadline[["train"]])){
+  #   deadline_left <- Inf
+  # }
+  # else {
+  #   deadline_left <- learner$deadline$train - as.numeric(Sys.time())
+  # }
   # call train_wrapper with encapsulation
+  #browser()
+  deadline_left_train <- max(as.numeric(difftime(learner$deadline["train"], Sys.time(), units = "secs")),0)
   result = encapsulate(learner$encapsulation["train"],
     .f = train_wrapper,
     .args = list(learner = learner, task = task),
     .pkgs = learner$packages,
     .seed = NA_integer_,
-    .timeout = learner$timeout["train"]
+    #.timeout = learner$timeout["train"]
+    .timeout = min(learner$timeout["train"], deadline_left_train)
   )
+  
+  # my code end
 
   log = append_log(NULL, "train", result$log$class, result$log$msg)
   train_time = result$elapsed
