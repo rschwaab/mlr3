@@ -93,14 +93,15 @@ learner_train = function(learner, task, train_row_ids = NULL, test_row_ids = NUL
     mode, learner$id, task$id, task$nrow, learner = learner$clone())
 
   # call train_wrapper with encapsulation
+  deadline_left_train <- max(as.numeric(difftime(learner$deadline["train"], Sys.time(), units = "secs")),0)
+  # call train_wrapper with encapsulation
   result = encapsulate(learner$encapsulation["train"],
-    .f = train_wrapper,
-    .args = list(learner = learner, task = task),
-    .pkgs = learner$packages,
-    .seed = NA_integer_,
-    .timeout = learner$timeout["train"]
+                       .f = train_wrapper,
+                       .args = list(learner = learner, task = task),
+                       .pkgs = learner$packages,
+                       .seed = NA_integer_,
+                       .timeout = min(learner$timeout["train"], deadline_left_train)
   )
-
   log = append_log(NULL, "train", result$log$class, result$log$msg)
   train_time = result$elapsed
 
